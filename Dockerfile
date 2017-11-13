@@ -1,5 +1,5 @@
 FROM sameersbn/ubuntu:14.04.20170123
-MAINTAINER sameer@damagehead.com
+MAINTAINER sameer@damagehead.com and team@silverbulleters.org
 
 ENV PG_APP_HOME="/etc/docker-postgresql"\
     PG_VERSION=9.6 \
@@ -12,15 +12,42 @@ ENV PG_APP_HOME="/etc/docker-postgresql"\
 ENV PG_BINDIR=/usr/lib/postgresql/${PG_VERSION}/bin \
     PG_DATADIR=${PG_HOME}/${PG_VERSION}/main
 
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
- && echo 'deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main' > /etc/apt/sources.list.d/pgdg.list \
+RUN apt-get update && apt-get install -y locales \
+        && localedef -i ru_RU -c -f UTF-8 -A /usr/share/locale/locale.alias ru_RU.UTF-8 \
+        && update-locale LANG=ru_RU.UTF-8
+
+ENV LANG ru_RU.UTF-8
+ENV LC_MESSAGES "POSIX"
+
+ADD tools/postgrepinning /etc/apt/preferences.d/postgres
+
+RUN wget --quiet -O - http://1c.postgrespro.ru/keys/GPG-KEY-POSTGRESPRO-1C | apt-key add - \
+ && echo 'deb http://1c.postgrespro.ru/deb/ trusty main' > /etc/apt/sources.list.d/postgrespro-1c.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y acl \
-      postgresql-${PG_VERSION} postgresql-client-${PG_VERSION} postgresql-contrib-${PG_VERSION} \
+      postgresql-pro-1c-${PG_VERSION} postgresql-client-pro-1c-${PG_VERSION} postgresql-contrib-pro-1c-${PG_VERSION} \
  && ln -sf ${PG_DATADIR}/postgresql.conf /etc/postgresql/${PG_VERSION}/main/postgresql.conf \
  && ln -sf ${PG_DATADIR}/pg_hba.conf /etc/postgresql/${PG_VERSION}/main/pg_hba.conf \
- && ln -sf ${PG_DATADIR}/pg_ident.conf /etc/postgresql/${PG_VERSION}/main/pg_ident.conf \
- && rm -rf ${PG_HOME} \
+ && ln -sf ${PG_DATADIR}/pg_ident.conf /etc/postgresql/${PG_VERSION}/main/pg_ident.conf 
+ 
+WORKDIR /usr/local/src
+
+RUN apt-get update && apt-get install -y \
+    gcc \
+    jq \
+    make \
+    postgresql-contrib-pro-1c-${PG_VERSION}  \
+    postgresql-server-dev-pro-1c-${PG_VERSION}  \
+    postgresql-plpython-pro-1c-${PG_VERSION} \
+    && wget -O- $(wget -O- https://api.github.com/repos/dalibo/powa-archivist/releases/latest|jq -r '.tarball_url') | tar -xzf - \
+    && wget -O- $(wget -O- https://api.github.com/repos/dalibo/pg_qualstats/releases/latest|jq -r '.tarball_url') | tar -xzf - \
+    && wget -O- $(wget -O- https://api.github.com/repos/dalibo/pg_stat_kcache/releases/latest|jq -r '.tarball_url') | tar -xzf - \
+    && wget -O- $(wget -O- https://api.github.com/repos/dalibo/hypopg/releases/latest|jq -r '.tarball_url') | tar -xzf - \
+    && wget -O- $(wget -O- https://api.github.com/repos/rjuju/pg_track_settings/releases/latest|jq -r '.tarball_url') | tar -xzf - \
+    && for f in $(ls); do cd $f; make install; cd ..; rm -rf $f; done \
+    && apt-get purge -y --auto-remove gcc jq make postgresql-server-dev-pro-1c-${PG_VERSION} wget
+
+ RUN rm -rf ${PG_HOME} \
  && rm -rf /var/lib/apt/lists/*
 
 COPY runtime/ ${PG_APP_HOME}/

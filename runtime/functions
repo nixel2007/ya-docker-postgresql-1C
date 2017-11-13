@@ -193,7 +193,7 @@ initialize_database() {
           mv ${PG_HOME}/${PG_OLD_VERSION} ${PG_HOME}/${PG_OLD_VERSION}.migrating
 
           echo "‣ Installing PostgreSQL ${PG_OLD_VERSION}..."
-          if ! ( apt-get update &&  DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-${PG_OLD_VERSION} postgresql-client-${PG_OLD_VERSION} ) >/dev/null; then
+          if ! ( apt-get update &&  DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-pro-1c-${PG_OLD_VERSION} postgresql-client-pro-1c-${PG_OLD_VERSION} ) >/dev/null; then
             echo "ERROR! Failed to install PostgreSQL ${PG_OLD_VERSION}. Exiting..."
             # first move the old data back
             rm -rf ${PG_HOME}/${PG_OLD_VERSION}
@@ -304,6 +304,37 @@ create_user() {
   fi
 }
 
+setup_default_extension() {
+  
+  case $REPLICATION_MODE in
+      slave|snapshot|backup)
+        echo "INFO! Database cannot be created on a $REPLICATION_MODE node. Skipping..."
+        ;;
+      *)
+      
+      echo "SET Shared Libs"
+
+      set_postgresql_param "shared_preload_libraries" "pg_stat_statements,powa,pg_qualstats,pg_stat_kcache"
+
+      set_postgresql_param "powa.frequency" "1min"
+      set_postgresql_param "powa.retention" "7d"
+      set_postgresql_param "powa.database" "${POWA_DATABASE}"
+      set_postgresql_param "powa.coalesce" "1000"
+
+      echo "LOADING default extensions"
+
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "UPDATE pg_language SET lanpltrusted = true WHERE lanname LIKE 'c';" >/dev/null 2>&1
+
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS unaccent;" >/dev/null 2>&1
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;" >/dev/null 2>&1
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pgstattuple;" >/dev/null 2>&1
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_prewarm;" >/dev/null 2>&1
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_buffercache;" >/dev/null 2>&1
+      ;;
+  esac
+
+}
+
 load_extensions() {
   local database=${1?missing argument}
 
@@ -321,6 +352,17 @@ load_extensions() {
     echo "‣ Loading ${extension} extension..."
     psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS ${extension};" >/dev/null 2>&1
   done
+
+  if [[ ${POWA_DATABASE} == ${database} ]]; then
+    echo "‣ Loading POWA extensions..."
+    psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;" >/dev/null 2>&1
+    psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS btree_gist;" >/dev/null 2>&1
+    psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS pg_qualstats;" >/dev/null 2>&1
+    psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS pg_stat_kcache;" >/dev/null 2>&1
+    psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS pg_track_settings" >/dev/null 2>&1
+    psql -U ${PG_USER} -d ${database} -c "CREATE EXTENSION IF NOT EXISTS powa" >/dev/null 2>&1
+
+  fi
 }
 
 create_database() {
@@ -377,6 +419,12 @@ configure_postgresql() {
   # start postgres server internally for the creation of users and databases
   rm -rf ${PG_DATADIR}/postmaster.pid
   set_postgresql_param "listen_addresses" "127.0.0.1" quiet
+  exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w start >/dev/null
+
+  setup_default_extension
+
+  # stop server for reload conf
+  exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w start >/dev/null
 
   create_user

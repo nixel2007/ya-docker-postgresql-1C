@@ -1,21 +1,57 @@
-PostgreSQL:
-  restart: always
-  image: sameersbn/postgresql:9.6-2
-  ports:
-    - "5432:5432"
-  environment:
-    - DEBUG=false
+version: '2'
+services:
+  PostgreSQL:
+    restart: always
+    image: silverbulleters/sameand1cpostgresql:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=true
+      - PG_PASSWORD=somepass
 
-    - DB_USER=
-    - DB_PASS=
-    - DB_NAME=
-    - DB_TEMPLATE=
+      - DB_USER=onecuser
+      - DB_PASS=anotherpass
+      - DB_NAME=powa
+      - DB_TEMPLATE=
 
-    - DB_EXTENSION=
+      - DB_EXTENSION=
 
-    - REPLICATION_MODE=
-    - REPLICATION_USER=
-    - REPLICATION_PASS=
-    - REPLICATION_SSLMODE=
-  volumes:
-    - /srv/docker/postgresql:/var/lib/postgresql
+      - REPLICATION_MODE=
+      - REPLICATION_USER=repluser
+      - REPLICATION_PASS=replpass
+      - REPLICATION_SSLMODE=
+
+  PostgreSQLSlave:
+    image: silverbulleters/sameand1cpostgresql:latest
+    links: 
+      - PostgreSQL:master
+    environment: 
+      - REPLICATION_MODE=slave
+      - REPLICATION_USER=repluser
+      - REPLICATION_PASS=replpass
+      - REPLICATION_HOST=master
+      - REPLICATION_PORT=5432
+      - REPLICATION_SSLMODE=prefer
+
+  PgAdminDBA:
+    image: dpage/pgadmin4
+    ports: 
+      - 8080:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=team@silverbulleters.org
+      - PGADMIN_DEFAULT_PASSWORD=somepass
+    #  - PGADMIN_ENABLE_TLS=
+    #  - PGADMIN_SERVER_NAME=
+    links: 
+      - PostgreSQL:master
+      - PostgreSQLSlave:slave
+
+  PowaWeb:
+      build: 
+        context: powa-web
+      image: silverbulleters/powa-web:latest
+      ports:
+        - 8899:8888
+      links:
+        - PostgreSQLSlave:slave
+    

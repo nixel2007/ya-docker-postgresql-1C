@@ -1,6 +1,4 @@
-[![Circle CI](https://circleci.com/gh/sameersbn/docker-postgresql.svg?style=shield)](https://circleci.com/gh/sameersbn/docker-postgresql) [![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/postgresql/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/postgresql) [![](https://badge.imagelayers.io/sameersbn/postgresql.svg)](https://imagelayers.io/?images=sameersbn/postgresql:latest 'Get your own badge on imagelayers.io')
-
-# sameersbn/postgresql:9.6-2
+# sameersbn/postgresql:9.6-2 with 1C support
 
 - [Introduction](#introduction)
   - [Contributing](#contributing)
@@ -32,13 +30,12 @@
 
 PostgreSQL is an object-relational database management system (ORDBMS) with an emphasis on extensibility and standards-compliance [[source](https://en.wikipedia.org/wiki/PostgreSQL)].
 
+> This repo is a fork !!! We add 1C Enterprise build from PostgreSQL.Pro company and setup some extension like POWA. We love sameersbn repos and use it on gilab instances - whats why we use that sameersbn is a base repo for this
+
 ## Contributing
 
-If you find this image useful here's how you can help:
-
-- Send a pull request with your awesome features and bug fixes
-- Help users resolve their [issues](../../issues?q=is%3Aopen+is%3Aissue).
-- Support the development of this image with a [donation](http://www.damagehead.com/donate/)
+for PG please use main repo 
+for 1C please use pull-request - not issue
 
 ## Issues
 

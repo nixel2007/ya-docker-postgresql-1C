@@ -5,3 +5,5 @@ VERSION
 README.md
 Changelog.md
 Makefile
+powa-web
+docker-compose.yml

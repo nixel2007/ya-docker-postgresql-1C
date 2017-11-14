@@ -1,7 +1,7 @@
 all: build
 
 build:
-	@docker build --tag=silverbulleters/sameand1cpostgresql .
+	@docker build --tag=silverbulleters/ya-docker-postgresql-1c .
 
 release: build
-	@docker build --tag=silverbulleters/sameand1cpostgresql:$(shell cat VERSION) .
+	@docker build --tag=silverbulleters/ya-docker-postgresql-1c:$(shell cat VERSION) .

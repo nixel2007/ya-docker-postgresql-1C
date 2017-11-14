@@ -2,7 +2,7 @@ version: '2'
 services:
   PostgreSQL:
     restart: always
-    image: silverbulleters/sameand1cpostgresql:latest
+    image: silverbulleters/ya-docker-postgresql-1c:latest
     ports:
       - "5432:5432"
     environment:
@@ -22,7 +22,7 @@ services:
       - REPLICATION_SSLMODE=
 
   PostgreSQLSlave:
-    image: silverbulleters/sameand1cpostgresql:latest
+    image: silverbulleters/ya-docker-postgresql-1c:latest
     links: 
       - PostgreSQL:master
     environment: 

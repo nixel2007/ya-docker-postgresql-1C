@@ -1,5 +1,13 @@
 # Changelog
 
+**9.6+1C**
+
+- add extensions hypopg and powa by default with building from source
+- migrate to postgresql-pro images
+- add official pgadmin 4-2 docker compose
+- add repication cluster example to docker compose
+- add powa-web to analyze from replica
+
 **9.6**
 - postgresql: upgrade to 9.6
 - upgrade baseimage to sameersbn/ubuntu:14.04.20170110

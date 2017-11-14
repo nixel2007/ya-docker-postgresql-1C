@@ -8,6 +8,7 @@
 - add repication cluster example to docker compose
 - add powa-web to analyze from replica
 - create official image https://hub.docker.com/r/silverbulleters/ya-docker-postgresql-1c/
+    - check the build and work on linux and windows
 
 **9.6**
 - postgresql: upgrade to 9.6

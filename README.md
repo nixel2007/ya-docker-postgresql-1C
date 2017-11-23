@@ -1,12 +1,12 @@
-# sameersbn/postgresql:9.6-2 with 1C support
+# VanessaDockers/postgresql:9.6-2 with 1C support
 
-- [Introduction](#introduction)
-  - [Contributing](#contributing)
-  - [Issues](#issues)
-- [Getting started](#getting-started)
-  - [Installation](#installation)
-  - [Quickstart](#quickstart)
-  - [Persistence](#persistence)
+- [Введение](#введение)
+  - [Доработка](#доработка)
+  - [Обсуждения](#обсуждения)
+- [Начиная использование](#приступая-к-работе)
+  - [Установка](#установка)
+  - [Быстрый старт](#быстрый-старт)
+  - [Персистентность](#персистентность)
   - [Trusting local connections](#trusting-local-connections)
   - [Setting `postgres` user password](#setting-postgres-user-password)
   - [Creating database user](#creating-database-user)
@@ -24,20 +24,17 @@
   - [Upgrading](#upgrading)
   - [Shell Access](#shell-access)
 
-# Introduction
+# Введение
 
-`Dockerfile` to create a [Docker](https://www.docker.com/) container image for [PostgreSQL](http://postgresql.org/).
+`Dockerfile` для создания образа [Docker](https://www.docker.com/) контейнера [PostgreSQL Pro](https://postgrespro.ru/).
 
-PostgreSQL is an object-relational database management system (ORDBMS) with an emphasis on extensibility and standards-compliance [[source](https://en.wikipedia.org/wiki/PostgreSQL)].
+PostgreSQL это объектно ориентированая система управления базами данных с акцентом на расширяемость и соответствие стандартам [[источник](https://ru.wikipedia.org/wiki/PostgreSQL)].
 
-> This repo is a fork !!! We add 1C Enterprise build from PostgreSQL.Pro company and setup some extension like POWA. We love sameersbn repos and use it on gilab instances - whats why we use that sameersbn is a base repo for this
+## Доработка
 
-## Contributing
+Для доработки данного образа используйте концепцию `fork` и `pull-request`
 
-for PG please use main repo 
-for 1C please use pull-request - not issue
-
-## Issues
+## Обсуждения
 
 Before reporting your issue please try updating Docker to the latest version and check if it resolves the issue. Refer to the Docker [installation guide](https://docs.docker.com/installation) for instructions.
 
@@ -49,25 +46,26 @@ If the above recommendations do not help then [report your issue](../../issues/n
 - The `docker run` command or `docker-compose.yml` used to start the image. Mask out the sensitive bits.
 - Please state if you are using [Boot2Docker](http://www.boot2docker.io), [VirtualBox](https://www.virtualbox.org), etc.
 
-# Getting started
+# Приступая к работе
 
-## Installation
+## Установка
 
-Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r//silverbulleters/ya-docker-postgresql-1c) and is the recommended method of installation.
+Автоматические сборки данного образа доступна через хаб [Dockerhub](https://hub.docker.com/r//silverbulleters/ya-docker-postgresql-1c) и являются рекомендованным способом установки
+
 
 ```bash
 docker pull silverbulleters/ya-docker-postgresql-1c
 ```
 
-Alternatively you can build the image yourself.
+Конечно же вы можете собрать образ и сами.
 
 ```bash
 docker build -t silverbulleters/ya-docker-postgresql-1c github.com/VanessDockers/ya-docker-postgresql-1c
 ```
 
-## Quickstart
+## Быстрый старт
 
-Start PostgreSQL using:
+Для запуска просто запустите команду:
 
 ```bash
 docker run --name postgresql -itd --restart always \
@@ -76,28 +74,30 @@ docker run --name postgresql -itd --restart always \
   silverbulleters/ya-docker-postgresql-1c:9.6-2.1
 ```
 
-Login to the PostgreSQL server using:
+Для подключения к сервер запустите команду:
 
 ```bash
 docker exec -it postgresql sudo -u postgres psql
 ```
 
-*Alternatively, you can use the sample [docker-compose.yml](docker-compose.yml) file to start the container using [Docker Compose](https://docs.docker.com/compose/)*
+*Дополнительно вы можете использовать примерный файл [docker-compose.yml](docker-compose.yml) для запуска вашего контейнера с помощью [Docker Compose](https://docs.docker.com/compose/)*
 
-## Persistence
+## Персистентность
 
 For PostgreSQL to preserve its state across container shutdown and startup you should mount a volume at `/var/lib/postgresql`.
 
-> *The [Quickstart](#quickstart) command already mounts a volume for persistence.*
+Чтобы PostgreSQL сохранял своё состояние между фазами отключения и запуска вы должны смотнировать раздел в точку монтирования `/var/lib/postgresql`.
 
-SELinux users should update the security context of the host mountpoint so that it plays nicely with Docker:
+> *В [Быстром старте](#быстрый-старт) команда уже монтирует точку подключения как персистентную.*
+
+Пользователи `SELinux` должны обновить контекст безопасности в точке подключения, чтобы корректно использовать Docker:
 
 ```bash
 mkdir -p /srv/docker/postgresql
 chcon -Rt svirt_sandbox_file_t /srv/docker/postgresql
 ```
 
-## Trusting local connections
+## Доверительные локальные соединения
 
 By default connections to the PostgreSQL server need to authenticated using a password. If desired you can trust connections from the local network using the `PG_TRUST_LOCALNET` variable.
 

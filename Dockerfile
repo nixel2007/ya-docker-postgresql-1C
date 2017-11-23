@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y locales \
         && localedef -i ru_RU -c -f UTF-8 -A /usr/share/locale/locale.alias ru_RU.UTF-8 \
         && update-locale LANG=ru_RU.UTF-8
 
+#TODO add en_US locale
 ENV LANG ru_RU.UTF-8
 ENV LC_MESSAGES "POSIX"
 

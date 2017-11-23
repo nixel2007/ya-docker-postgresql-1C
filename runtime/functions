@@ -308,7 +308,7 @@ setup_default_extension() {
   
   case $REPLICATION_MODE in
       slave|snapshot|backup)
-        echo "INFO! Database cannot be created on a $REPLICATION_MODE node. Skipping..."
+        echo "INFO! Extensions cannot be created on a $REPLICATION_MODE node. Skipping..."
         ;;
       *)
       
@@ -411,6 +411,47 @@ create_replication_user() {
   fi
 }
 
+set_max_connection() {
+  set_postgresql_param "max_connections" "${PG_MAX_CONNECTION}" 
+}
+
+adoptive_shared_buffers() {
+  shared=$(expr $physmem / 4)
+  set_postgresql_param "shared_buffers" "${shared}Mb" 
+}
+
+adoptive_temp_buffers() {
+  set_postgresql_param "temp_buffers" "256Mb" #Hm TODO
+}
+
+adoptive_autovacuum_workers() {
+  set_postgresql_param "autovacuum_max_workers" "4" #Max(Core/2,4) TODO
+}
+
+adoptive_work_mem() {
+  local devmem=$(expr $physmem - $shared )
+  local mixed=$(expr ${PG_MAX_CONNECTION} * 6 )  #mixed-type TODO
+  work_mem=$(expr $devmem / $mixed )
+  set_postgresql_param "work_mem" "${work_mem}Mb" #RAM/MaxConnection
+}
+
+adoptive_maintenance_mem() {
+  local maintenance_work_mem=$(expr $work_mem * 4 )
+  set_postgresql_param "maintenance_work_mem" "${maintenance_work_mem}Mb" #TODO we need to get max index from pg_catatlog
+}
+
+adoptive_cashe_size() {
+  local devmem=$(expr $physmem - $shared )
+  set_postgresql_param "effective_cache_size" "${devmem}Mb"
+}
+
+adoptive_io() {
+  #cat /sys/block/sda/queue/rotational
+  #lsblk -d -o name,rota
+  echo "we use iostat and ome tricks"
+  set_postgresql_param "effective_io_concurrency" "2"
+}
+
 configure_postgresql() {
   initialize_database
   configure_recovery
@@ -433,6 +474,26 @@ configure_postgresql() {
 
   # stop the postgres server
   exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
+
+  #tune
+
+  physmem=$(free -m|awk '/^Mem:/{print $2}')
+
+  case $REPLICATION_MODE in
+      slave|snapshot|backup)
+        echo "INFO! Tune for replica is not processed $REPLICATION_MODE node. Skipping..."
+        ;;
+      *)
+
+    adoptive_shared_buffers
+    adoptive_temp_buffers
+    adoptive_autovacuum_workers
+    adoptive_work_mem
+    adoptive_maintenance_mem
+    adoptive_cashe_size
+    adoptive_io
+  
+  esac
 
   # listen on all interfaces
   set_postgresql_param "listen_addresses" "*" quiet

@@ -21,6 +21,8 @@ services:
       - REPLICATION_PASS=replpass
       - REPLICATION_SSLMODE=
 
+      - PG_MAX_CONNECTION=10
+
   PostgreSQLSlave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
     links: 

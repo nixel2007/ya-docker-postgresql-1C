@@ -467,6 +467,14 @@ adoptive_io() {
   set_postgresql_param "effective_io_concurrency" "2"
 }
 
+adoptive_fstat() {
+
+}
+
+enable_magic() {
+  
+}
+
 configure_postgresql() {
   initialize_database
   configure_recovery

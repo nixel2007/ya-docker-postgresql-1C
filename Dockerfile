@@ -1,6 +1,8 @@
 FROM sameersbn/ubuntu:14.04.20170123
 MAINTAINER sameer@damagehead.com and team@silverbulleters.org
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 ENV PG_APP_HOME="/etc/docker-postgresql"\
     PG_VERSION=9.6 \
     PG_USER=postgres \

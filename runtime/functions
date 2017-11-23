@@ -413,36 +413,51 @@ create_replication_user() {
 
 set_max_connection() {
   set_postgresql_param "max_connections" "${PG_MAX_CONNECTION}" 
+  echo "Set the maxconnection ${PG_MAX_CONNECTION}"
 }
 
 adoptive_shared_buffers() {
   shared=$(expr $physmem / 4)
-  set_postgresql_param "shared_buffers" "${shared}Mb" 
+  set_postgresql_param "shared_buffers" "${shared}MB" 
+
+  echo "Set the shared ${shared}"
 }
 
 adoptive_temp_buffers() {
-  set_postgresql_param "temp_buffers" "256Mb" #Hm TODO
+  set_postgresql_param "temp_buffers" "256MB" #Hm TODO
+  echo "Set the temp 256Mb"
 }
 
 adoptive_autovacuum_workers() {
   set_postgresql_param "autovacuum_max_workers" "4" #Max(Core/2,4) TODO
+  echo "Set the autvac-workers 4"
 }
 
 adoptive_work_mem() {
   local devmem=$(expr $physmem - $shared )
-  local mixed=$(expr ${PG_MAX_CONNECTION} * 6 )  #mixed-type TODO
+  local conect=${PG_MAX_CONNECTION}
+  local devider=$(expr 6)
+  local mixed=$(expr $devider '*' $conect )  #mixed-type TODO
   work_mem=$(expr $devmem / $mixed )
-  set_postgresql_param "work_mem" "${work_mem}Mb" #RAM/MaxConnection
+  set_postgresql_param "work_mem" "${work_mem}MB" #RAM/MaxConnection
+
+  echo "Set the work_mem ${work_mem}"
+  
 }
 
 adoptive_maintenance_mem() {
-  local maintenance_work_mem=$(expr $work_mem * 4 )
-  set_postgresql_param "maintenance_work_mem" "${maintenance_work_mem}Mb" #TODO we need to get max index from pg_catatlog
+  local maintenance_work_mem=$(expr $work_mem '*' 4 )
+  set_postgresql_param "maintenance_work_mem" "${maintenance_work_mem}MB" #TODO we need to get max index from pg_catatlog
+
+  echo "Set the maintenance_work_mem ${maintenance_work_mem}"
 }
 
 adoptive_cashe_size() {
   local devmem=$(expr $physmem - $shared )
-  set_postgresql_param "effective_cache_size" "${devmem}Mb"
+  set_postgresql_param "effective_cache_size" "${devmem}MB"
+
+  echo "Set the effective_cache_size ${effective_cache_size}"
+
 }
 
 adoptive_io() {

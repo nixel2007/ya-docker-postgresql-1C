@@ -84,8 +84,6 @@ docker exec -it postgresql sudo -u postgres psql
 
 ## Персистентность
 
-For PostgreSQL to preserve its state across container shutdown and startup you should mount a volume at `/var/lib/postgresql`.
-
 Чтобы PostgreSQL сохранял своё состояние между фазами отключения и запуска вы должны смотнировать раздел в точку монтирования `/var/lib/postgresql`.
 
 > *В [Быстром старте](#быстрый-старт) команда уже монтирует точку подключения как персистентную.*
@@ -379,3 +377,7 @@ For debugging and maintenance purposes you may want access the containers shell.
 ```bash
 docker exec -it postgresql bash
 ```
+
+# Тонкий тюннинг
+
+Обратите внимание контейнер использует для адаптации параметров запуска все выделенные ресурсы для Docker хоста, если вы хотите наложить ограничения на контейнер используейте параметры ограничений [Ограничения ресурсов](https://docs.docker.com/engine/admin/resource_constraints/)

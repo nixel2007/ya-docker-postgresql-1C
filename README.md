@@ -1,12 +1,12 @@
-# sameersbn/postgresql:9.6-2 with 1C support
+# VanessaDockers/postgresql:9.6-2 with 1C support
 
-- [Introduction](#introduction)
-  - [Contributing](#contributing)
-  - [Issues](#issues)
-- [Getting started](#getting-started)
-  - [Installation](#installation)
-  - [Quickstart](#quickstart)
-  - [Persistence](#persistence)
+- [Введение](#введение)
+  - [Доработка](#доработка)
+  - [Обсуждения](#обсуждения)
+- [Начиная использование](#приступая-к-работе)
+  - [Установка](#установка)
+  - [Быстрый старт](#быстрый-старт)
+  - [Персистентность](#персистентность)
   - [Trusting local connections](#trusting-local-connections)
   - [Setting `postgres` user password](#setting-postgres-user-password)
   - [Creating database user](#creating-database-user)
@@ -24,20 +24,17 @@
   - [Upgrading](#upgrading)
   - [Shell Access](#shell-access)
 
-# Introduction
+# Введение
 
-`Dockerfile` to create a [Docker](https://www.docker.com/) container image for [PostgreSQL](http://postgresql.org/).
+`Dockerfile` для создания образа [Docker](https://www.docker.com/) контейнера [PostgreSQL Pro](https://postgrespro.ru/).
 
-PostgreSQL is an object-relational database management system (ORDBMS) with an emphasis on extensibility and standards-compliance [[source](https://en.wikipedia.org/wiki/PostgreSQL)].
+PostgreSQL это объектно ориентированая система управления базами данных с акцентом на расширяемость и соответствие стандартам [[источник](https://ru.wikipedia.org/wiki/PostgreSQL)].
 
-> This repo is a fork !!! We add 1C Enterprise build from PostgreSQL.Pro company and setup some extension like POWA. We love sameersbn repos and use it on gilab instances - whats why we use that sameersbn is a base repo for this
+## Доработка
 
-## Contributing
+Для доработки данного образа используйте концепцию `fork` и `pull-request`
 
-for PG please use main repo 
-for 1C please use pull-request - not issue
-
-## Issues
+## Обсуждения
 
 Before reporting your issue please try updating Docker to the latest version and check if it resolves the issue. Refer to the Docker [installation guide](https://docs.docker.com/installation) for instructions.
 
@@ -45,66 +42,67 @@ SELinux users should try disabling SELinux using the command `setenforce 0` to s
 
 If the above recommendations do not help then [report your issue](../../issues/new) along with the following information:
 
-- Output of the `docker vers6` and `docker info` commands
+- Output of the `docker version` and `docker info` commands
 - The `docker run` command or `docker-compose.yml` used to start the image. Mask out the sensitive bits.
 - Please state if you are using [Boot2Docker](http://www.boot2docker.io), [VirtualBox](https://www.virtualbox.org), etc.
 
-# Getting started
+# Приступая к работе
 
-## Installation
+## Установка
 
-Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r//silverbulleters/ya-docker-postgresql-1c) and is the recommended method of installation.
+Автоматические сборки данного образа доступна через хаб [Dockerhub](https://hub.docker.com/r//silverbulleters/ya-docker-postgresql-1c) и являются рекомендованным способом установки
+
 
 ```bash
 docker pull silverbulleters/ya-docker-postgresql-1c
 ```
 
-Alternatively you can build the image yourself.
+Конечно же вы можете собрать образ и сами.
 
 ```bash
 docker build -t silverbulleters/ya-docker-postgresql-1c github.com/VanessDockers/ya-docker-postgresql-1c
 ```
 
-## Quickstart
+## Быстрый старт
 
-Start PostgreSQL using:
+Для запуска просто запустите команду:
 
 ```bash
 docker run --name postgresql -itd --restart always \
   --publish 5432:5432 \
   --volume /srv/docker/postgresql:/var/lib/postgresql \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
-Login to the PostgreSQL server using:
+Для подключения к сервер запустите команду:
 
 ```bash
 docker exec -it postgresql sudo -u postgres psql
 ```
 
-*Alternatively, you can use the sample [docker-compose.yml](docker-compose.yml) file to start the container using [Docker Compose](https://docs.docker.com/compose/)*
+*Дополнительно вы можете использовать примерный файл [docker-compose.yml](docker-compose.yml) для запуска вашего контейнера с помощью [Docker Compose](https://docs.docker.com/compose/)*
 
-## Persistence
+## Персистентность
 
-For PostgreSQL to preserve its state across container shutdown and startup you should mount a volume at `/var/lib/postgresql`.
+Чтобы PostgreSQL сохранял своё состояние между фазами отключения и запуска вы должны смотнировать раздел в точку монтирования `/var/lib/postgresql`.
 
-> *The [Quickstart](#quickstart) command already mounts a volume for persistence.*
+> *В [Быстром старте](#быстрый-старт) команда уже монтирует точку подключения как персистентную.*
 
-SELinux users should update the security context of the host mountpoint so that it plays nicely with Docker:
+Пользователи `SELinux` должны обновить контекст безопасности в точке подключения, чтобы корректно использовать Docker:
 
 ```bash
 mkdir -p /srv/docker/postgresql
 chcon -Rt svirt_sandbox_file_t /srv/docker/postgresql
 ```
 
-## Trusting local connections
+## Доверительные локальные соединения
 
 By default connections to the PostgreSQL server need to authenticated using a password. If desired you can trust connections from the local network using the `PG_TRUST_LOCALNET` variable.
 
 ```bash
 docker run --name postgresql -itd --restart always \
   --env 'PG_TRUST_LOCALNET=true' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 > **Note**
@@ -118,7 +116,7 @@ By default the `postgres` user is not assigned a password and as a result you ca
 ```bash
 docker run --name postgresql -itd --restart always \
   --env 'PG_PASSWORD=passw0rd' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 
@@ -134,7 +132,7 @@ A new PostgreSQL database user can be created by specifying the `DB_USER` and `D
 ```bash
 docker run --name postgresql -itd --restart always \
   --env 'DB_USER=dbuser' --env 'DB_PASS=dbuserpass' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 > **Notes**
@@ -151,19 +149,17 @@ A new PostgreSQL database can be created by specifying the `DB_NAME` variable wh
 ```bash
 docker run --name postgresql -itd --restart always \
   --env 'DB_NAME=dbname' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 By default databases are created by copying the standard system database named `template1`. You can specify a different template for your database using the `DB_TEMPLATE` parameter. Refer to [Template Databases](http://www.postgresql.org/docs/9.4/static/manage-ag-templatedbs.html) for further information.
 
 Additionally, more than one database can be created by specifying a comma separated list of database names in `DB_NAME`. For example, the following command creates two new databases named `dbname1` and `dbname2`.
 
-*This feature is only available in releases greater than `9.1-1`*
-
 ```bash
 docker run --name postgresql -itd --restart always \
   --env 'DB_NAME=dbname1,dbname2' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 ## Granting user access to a database
@@ -174,7 +170,7 @@ If the `DB_USER` and `DB_PASS` variables are specified along with the `DB_NAME` 
 docker run --name postgresql -itd --restart always \
   --env 'DB_USER=dbuser' --env 'DB_PASS=dbuserpass' \
   --env 'DB_NAME=dbname1,dbname2' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 In the above example `dbuser` with be granted access to both the `dbname1` and `dbname2` databases.
@@ -186,7 +182,7 @@ The image also packages the [postgres contrib module](http://www.postgresql.org/
 ```bash
 docker run --name postgresql -itd \
   --env 'DB_NAME=db1,db2' --env 'DB_EXTENSION=unaccent,pg_trgm' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 The above command enables the `unaccent` and `pg_trgm` modules on the databases listed in `DB_NAME`, namely `db1` and `db2`.
@@ -202,7 +198,7 @@ Similar to the creation of a database user, a new PostgreSQL replication user ca
 ```bash
 docker run --name postgresql -itd --restart always \
   --env 'REPLICATION_USER=repluser' --env 'REPLICATION_PASS=repluserpass' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 > **Notes**
@@ -224,7 +220,7 @@ Begin by creating the master node of our cluster:
 docker run --name postgresql-master -itd --restart always \
   --env 'DB_USER=dbuser' --env 'DB_PASS=dbuserpass' --env 'DB_NAME=dbname' \
   --env 'REPLICATION_USER=repluser' --env 'REPLICATION_PASS=repluserpass' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 Notice that no additional arguments are specified while starting the master node of the cluster.
@@ -239,7 +235,7 @@ docker run --name postgresql-slave01 -itd --restart always \
   --env 'REPLICATION_MODE=slave' --env 'REPLICATION_SSLMODE=prefer' \
   --env 'REPLICATION_HOST=master' --env 'REPLICATION_PORT=5432'  \
   --env 'REPLICATION_USER=repluser' --env 'REPLICATION_PASS=repluserpass' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 *In the above command, we used docker links so that we can address the master node using the `master` alias in `REPLICATION_HOST`.*
@@ -271,7 +267,7 @@ docker run --name postgresql-snapshot -itd --restart always \
   --env 'REPLICATION_MODE=snapshot' --env 'REPLICATION_SSLMODE=prefer' \
   --env 'REPLICATION_HOST=master' --env 'REPLICATION_PORT=5432'  \
   --env 'REPLICATION_USER=repluser' --env 'REPLICATION_PASS=repluserpass' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 The difference between a slave and a snapshot is that a slave is read-only and updated whenever the master data is updated (streaming replication), while a snapshot is read-write and is not updated after the initial snapshot of the data from the master.
@@ -293,7 +289,7 @@ docker run --name postgresql-backup -it --rm \
   --env 'REPLICATION_HOST=master' --env 'REPLICATION_PORT=5432'  \
   --env 'REPLICATION_USER=repluser' --env 'REPLICATION_PASS=repluserpass' \
   --volume /srv/docker/backups/postgresql.$(date +%Y%m%d%H%M%S):/var/lib/postgresql \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
 
 Once the backup is generated, the container will exit and the backup of the master data will be available at `/srv/docker/backups/postgresql.XXXXXXXXXXXX/`. Restoring the backup involves starting a container with the data in `/srv/docker/backups/postgresql.XXXXXXXXXXXX`.
@@ -304,10 +300,10 @@ You can customize the launch command of PostgreSQL server by specifying argument
 
 ```bash
 docker run --name postgresql -itd --restart always \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1 -c log_connections=on
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3 -c log_connections=on
 ```
 
-Please refer to the documentation of [postgres](http://www.postgresql.org/docs/9.4/static/app-postgres.html) for the complete list of available options.
+Please refer to the documentation of [postgres](http://www.postgresql.org/docs/9.6/static/app-postgres.html) for the complete list of available options.
 
 ## Logs
 
@@ -315,13 +311,13 @@ By default the PostgreSQL server logs are sent to the standard output. Using the
 
 ```bash
 docker run --name postgresql -itd --restart always \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1 -c logging_collector=on
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3 -c logging_collector=on
 ```
 
 To access the PostgreSQL logs you can use `docker exec`. For example:
 
 ```bash
-docker exec -it postgresql tail -f /var/log/postgresql/postgresql-9.4-main.log
+docker exec -it postgresql tail -f /var/log/postgresql/postgresql-9.5-main.log
 ```
 
 # UID/GID mapping
@@ -337,8 +333,12 @@ For example, if you want to assign the `postgres` user of the container the UID 
 ```bash
 docker run --name postgresql -itd --restart always \
   --env 'USERMAP_UID=999' --env 'USERMAP_GID=999' \
-  silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  silverbulleters/ya-docker-postgresql-1c:9.6-5.3
 ```
+
+# Параметры запуска контейнера
+
+Сгрупированы в файле [переменных окружения](runtime/env-defaults)
 
 # Maintenance
 
@@ -349,7 +349,7 @@ To upgrade to newer releases:
   1. Download the updated Docker image:
 
   ```bash
-  docker pull silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+  docker pull silverbulleters/ya-docker-postgresql-1c:9.6-5.3
   ```
 
   2. Stop the currently running image:
@@ -369,7 +369,7 @@ To upgrade to newer releases:
   ```bash
   docker run --name postgresql -itd \
     [OPTIONS] \
-    silverbulleters/ya-docker-postgresql-1c:9.6-2.1
+    silverbulleters/ya-docker-postgresql-1c:9.6-5.3
   ```
 
 ## Shell Access
@@ -379,3 +379,7 @@ For debugging and maintenance purposes you may want access the containers shell.
 ```bash
 docker exec -it postgresql bash
 ```
+
+# Тонкий тюннинг
+
+Обратите внимание контейнер использует для адаптации параметров запуска все выделенные ресурсы для Docker хоста, если вы хотите наложить ограничения на контейнер используейте параметры ограничений [Ограничения ресурсов](https://docs.docker.com/engine/admin/resource_constraints/)

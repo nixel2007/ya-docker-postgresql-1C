@@ -47,7 +47,7 @@ RUN apt-get update && apt-get install -y \
     && wget -O- $(wget -O- https://api.github.com/repos/dalibo/pg_stat_kcache/releases/latest|jq -r '.tarball_url') | tar -xzf - \
     && wget -O- $(wget -O- https://api.github.com/repos/dalibo/hypopg/releases/latest|jq -r '.tarball_url') | tar -xzf - \
     && wget -O- $(wget -O- https://api.github.com/repos/rjuju/pg_track_settings/releases/latest|jq -r '.tarball_url') | tar -xzf - \
-    && wget -O- $(wget -O- https://api.github.com/repos/reorg/pg_repack/releases/latest|jq -r '.tarball_url') | tar -xzf - \
+    && wget -O- $(wget -O- https://api.github.com/repos/reorg/pg_repack/releases/tags/ver_1.4.2|jq -r '.tarball_url') | tar -xzf - \
     && for f in $(ls); do cd $f; make install; cd ..; rm    -rf $f; done \
     && apt-get purge -y --auto-remove gcc jq make postgresql-server-dev-pro-1c-${PG_VERSION} wget
 

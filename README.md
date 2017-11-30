@@ -380,6 +380,31 @@ For debugging and maintenance purposes you may want access the containers shell.
 docker exec -it postgresql bash
 ```
 
+### Перед стартом работы с 1С
+
+Если вы загрузили базу данных из DT файла в случае с 1С необходимо выполнить следующую последовательность команды
+
+```
+docker exec -it postgresql bash
+sudo su postgres
+vacuumdb -v -a -f -F -z
+```
+
+более подробно смотри 
+
+* [на русском](https://postgrespro.ru/docs/postgrespro/current/app-vacuumdb)
+* [на английском](https://www.postgresql.org/docs/current/static/app-vacuumdb.html)
+
 # Тонкий тюннинг
 
+## Ресурсы
+
 Обратите внимание контейнер использует для адаптации параметров запуска все выделенные ресурсы для Docker хоста, если вы хотите наложить ограничения на контейнер используейте параметры ограничений [Ограничения ресурсов](https://docs.docker.com/engine/admin/resource_constraints/)
+
+## История со сжатим TOAST
+
+Не все поля клиентское приложение может поместить в [TOAST](https://postgrespro.ru/docs/postgrespro/current/storage-toast), поэтому можно использовать скрипт для попытки сжатия в хранилище `EXTENDED`
+
+Скрипт использует oscript.io для реализации, для подключения используется системные переменненые DBNAME
+
+Подробней в самом скрипте [./compsess-status.os]

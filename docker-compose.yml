@@ -38,7 +38,7 @@ services:
   PgAdminDBA:
     image: dpage/pgadmin4
     ports: 
-      - 8080:80
+      - 8880:80
     environment:
       - PGADMIN_DEFAULT_EMAIL=team@silverbulleters.org
       - PGADMIN_DEFAULT_PASSWORD=somepass

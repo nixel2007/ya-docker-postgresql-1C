@@ -469,7 +469,7 @@ adoptive_io() {
 }
 
 adoptive_fstat() {
-
+  echo 'we need to fix fstat here'
 }
 
 enable_magic() {
@@ -517,6 +517,7 @@ configure_postgresql() {
     adoptive_cashe_size
     adoptive_io
 
+    #adoptive_fstat
     #enable_magic TODO - add mamonsu tuner
   
   esac

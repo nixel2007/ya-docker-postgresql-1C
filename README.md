@@ -1,5 +1,9 @@
 # VanessaDockers/postgresql:9.6-2 with 1C support
 
+Stable Build Status   | Experimental Build Status |
+:-------------------:|:----------------------:|
+[![CircleCI](https://circleci.com/gh/VanessaDockers/ya-docker-postgresql-1C/tree/master.svg?style=svg)](https://circleci.com/gh/VanessaDockers/ya-docker-postgresql-1C/tree/master) | [![CircleCI](https://circleci.com/gh/VanessaDockers/ya-docker-postgresql-1C/tree/experimental.svg?style=svg)](https://circleci.com/gh/VanessaDockers/ya-docker-postgresql-1C/tree/experimental) |
+
 - [Введение](#введение)
   - [Доработка](#доработка)
   - [Обсуждения](#обсуждения)

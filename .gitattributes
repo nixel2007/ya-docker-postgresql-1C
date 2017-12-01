@@ -1,2 +1,5 @@
 *.sh -crlf
 Dockerfile -crlf
+runtime/env-defaults -crlf
+runtime/functions -crlf
+runtime/warmup -crlf

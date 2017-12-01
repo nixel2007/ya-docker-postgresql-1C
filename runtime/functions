@@ -463,7 +463,7 @@ adoptive_cashe_size() {
 
 adoptive_io() {
   #cat /sys/block/sda/queue/rotational
-  #lsblk -d -o name,rota
+  #lsblk -d -o name,rota TODO
   echo "we use iostat and ome tricks"
   set_postgresql_param "effective_io_concurrency" "2"
 }
@@ -473,7 +473,7 @@ adoptive_fstat() {
 }
 
 enable_magic() {
-  
+   mamonsu tune
 }
 
 configure_postgresql() {
@@ -516,6 +516,8 @@ configure_postgresql() {
     adoptive_maintenance_mem
     adoptive_cashe_size
     adoptive_io
+
+    #enable_magic TODO - add mamonsu tuner
   
   esac
 

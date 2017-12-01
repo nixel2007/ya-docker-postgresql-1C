@@ -20,8 +20,9 @@ services:
       - REPLICATION_USER=repluser
       - REPLICATION_PASS=replpass
       - REPLICATION_SSLMODE=
+      - PG_TUNE_BY_MAMONSU=true
 
-      - PG_MAX_CONNECTION=10
+      - PG_MAX_CONNECTION=30
 
   PostgreSQLSlave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
@@ -38,7 +39,7 @@ services:
   PgAdminDBA:
     image: dpage/pgadmin4
     ports: 
-      - 8080:80
+      - 8880:80
     environment:
       - PGADMIN_DEFAULT_EMAIL=team@silverbulleters.org
       - PGADMIN_DEFAULT_PASSWORD=somepass

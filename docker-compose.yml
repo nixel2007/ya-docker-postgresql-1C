@@ -1,6 +1,6 @@
 version: '2'
 services:
-  PostgreSQL:
+  postgresql:
     restart: always
     image: silverbulleters/ya-docker-postgresql-1c:latest
     ports:
@@ -23,10 +23,10 @@ services:
 
       - PG_MAX_CONNECTION=10
 
-  PostgreSQLSlave:
+  postgresql-slave:
     image: silverbulleters/ya-docker-postgresql-1c:latest
     links: 
-      - PostgreSQL:master
+      - postgresql:master
     environment: 
       - REPLICATION_MODE=slave
       - REPLICATION_USER=repluser
@@ -35,7 +35,7 @@ services:
       - REPLICATION_PORT=5432
       - REPLICATION_SSLMODE=prefer
 
-  PgAdminDBA:
+  pgadmin:
     image: dpage/pgadmin4
     ports: 
       - 8080:80
@@ -45,15 +45,16 @@ services:
     #  - PGADMIN_ENABLE_TLS=
     #  - PGADMIN_SERVER_NAME=
     links: 
-      - PostgreSQL:master
-      - PostgreSQLSlave:slave
+      - postgresql:master
+      - postgresql-slave:slave
 
-  PowaWeb:
+  powa-web:
       build: 
         context: powa-web
       image: silverbulleters/powa-web:latest
       ports:
         - 8899:8888
       links:
-        - PostgreSQLSlave:slave
+        - postgresql:master
+        - postgresql-slave:slave
     

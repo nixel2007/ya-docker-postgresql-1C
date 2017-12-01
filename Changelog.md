@@ -1,5 +1,11 @@
 # Changelog
 
+**9.6-2.5**
+
+- add mamonsu tune by default
+- fix CRLF
+- add pg_repack extensions
+
 **9.6-2.1**
 
 - add extensions hypopg and powa by default with building from source

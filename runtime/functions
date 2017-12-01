@@ -431,7 +431,7 @@ adoptive_temp_buffers() {
 
 adoptive_autovacuum_workers() {
   set_postgresql_param "autovacuum_max_workers" "4" #Max(Core/2,4) TODO
-  echo "Set the autvac-workers 4"
+  echo "Set the autovac-workers 4"
 }
 
 adoptive_work_mem() {
@@ -473,7 +473,9 @@ adoptive_fstat() {
 }
 
 enable_magic() {
-   mamonsu tune
+  if [[ ${PG_TUNE_BY_MAMONSU} == true ]]: then
+    sudo mamonsu tune
+  fi
 }
 
 configure_postgresql() {
@@ -518,7 +520,7 @@ configure_postgresql() {
     adoptive_io
 
     #adoptive_fstat
-    #enable_magic TODO - add mamonsu tuner
+    enable_magic
   
   esac
 

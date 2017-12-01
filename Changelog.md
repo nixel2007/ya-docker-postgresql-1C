@@ -1,10 +1,12 @@
 # Changelog
 
-**9.6-2.5**
+**9.6.5-4**
 
 - add mamonsu tune by default
 - fix CRLF
 - add pg_repack extensions
+- fix deprecated Docker label
+- use circleci to CICD
 
 **9.6-2.1**
 

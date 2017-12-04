@@ -1,5 +1,13 @@
 # Changelog
 
+**9.6.5-4**
+
+- add mamonsu tune by default
+- fix CRLF
+- add pg_repack extensions
+- fix deprecated Docker label
+- use circleci to CICD
+
 **9.6-2.1**
 
 - add extensions hypopg and powa by default with building from source

@@ -330,6 +330,7 @@ setup_default_extension() {
       psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pgstattuple;" >/dev/null 2>&1
       psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_prewarm;" >/dev/null 2>&1
       psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_buffercache;" >/dev/null 2>&1
+      psql -U ${PG_USER} -d ${DB_TEMPLATE} -c "CREATE EXTENSION IF NOT EXISTS pg_repack;" >/dev/null 2>&1
       ;;
   esac
 
@@ -430,7 +431,7 @@ adoptive_temp_buffers() {
 
 adoptive_autovacuum_workers() {
   set_postgresql_param "autovacuum_max_workers" "4" #Max(Core/2,4) TODO
-  echo "Set the autvac-workers 4"
+  echo "Set the autovac-workers 4"
 }
 
 adoptive_work_mem() {
@@ -462,9 +463,25 @@ adoptive_cashe_size() {
 
 adoptive_io() {
   #cat /sys/block/sda/queue/rotational
-  #lsblk -d -o name,rota
+  #lsblk -d -o name,rota TODO
   echo "we use iostat and ome tricks"
   set_postgresql_param "effective_io_concurrency" "2"
+}
+
+adoptive_fstat() {
+  echo 'we need to fix fstat here'
+}
+
+enable_magic() {
+  if [[ ${PG_TUNE_BY_MAMONSU} == true ]]; then
+    echo "MamonSu try to tune PG"
+    exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w start >/dev/null
+    mamonsu tune
+    exec_as_postgres ${PG_BINDIR}/pg_ctl -D ${PG_DATADIR} -w stop >/dev/null
+    echo "end mamonsu worker"
+    echo "whereis an additional conf"
+    cat ${PG_DATADIR}/postgresql.auto.conf
+  fi
 }
 
 configure_postgresql() {
@@ -507,7 +524,10 @@ configure_postgresql() {
     adoptive_maintenance_mem
     adoptive_cashe_size
     adoptive_io
-  
+
+    enable_magic
+
+    #adoptive_fstat  
   esac
 
   # listen on all interfaces

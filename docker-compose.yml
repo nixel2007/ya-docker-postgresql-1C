@@ -22,8 +22,9 @@ services:
       - REPLICATION_USER=repluser
       - REPLICATION_PASS=replpass
       - REPLICATION_SSLMODE=
+      - PG_TUNE_BY_MAMONSU=true
 
-      - PG_MAX_CONNECTION=10
+      - PG_MAX_CONNECTION=30
 
   postgresql-slave:
     restart: always
@@ -44,7 +45,7 @@ services:
     restart: always
     image: dpage/pgadmin4
     ports: 
-      - 8080:80
+      - 8880:80
     environment:
       - PGADMIN_DEFAULT_EMAIL=team@silverbulleters.org
       - PGADMIN_DEFAULT_PASSWORD=somepass

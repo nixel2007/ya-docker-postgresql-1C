@@ -1,6 +1,6 @@
 #vim:set ft=dockerfile
 FROM debian:jessie
-MAINTAINER Julien Rouhaud <julien.rouhaud@dalibo.com>
+LABEL maintainer="Julien Rouhaud <julien.rouhaud@dalibo.com>"
 
 WORKDIR /usr/local/src
 

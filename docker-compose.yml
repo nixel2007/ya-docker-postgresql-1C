@@ -24,6 +24,7 @@ services:
       - PG_MAX_CONNECTION=10
 
   postgresql-slave:
+    restart: always
     image: silverbulleters/ya-docker-postgresql-1c:latest
     links: 
       - postgresql:master
@@ -36,6 +37,7 @@ services:
       - REPLICATION_SSLMODE=prefer
 
   pgadmin:
+    restart: always
     image: dpage/pgadmin4
     ports: 
       - 8080:80

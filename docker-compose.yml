@@ -51,12 +51,13 @@ services:
       - postgresql-slave:slave
 
   powa-web:
-      build: 
-        context: powa-web
       image: silverbulleters/powa-web:latest
-      ports:
-        - 8899:8888
-      links:
-        - postgresql:master
-        - postgresql-slave:slave
+    restart: always
+    build: 
+      context: powa-web
+    ports:
+      - 8899:8888
+    links:
+      - postgresql:master
+      - postgresql-slave:slave
     

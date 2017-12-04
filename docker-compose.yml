@@ -3,6 +3,8 @@ services:
   postgresql:
     restart: always
     image: silverbulleters/ya-docker-postgresql-1c:latest
+    volumes:
+      - postgresql-volume-master:/var/lib/postgresql:Z
     ports:
       - "5432:5432"
     environment:
@@ -26,6 +28,8 @@ services:
   postgresql-slave:
     restart: always
     image: silverbulleters/ya-docker-postgresql-1c:latest
+    volumes:
+      - postgresql-volume-slave:/var/lib/postgresql:Z
     links: 
       - postgresql:master
     environment: 
@@ -61,3 +65,8 @@ services:
       - postgresql:master
       - postgresql-slave:slave
     
+volumes:
+  postgresql-volume-master:
+    external: true
+  postgresql-volume-slave:
+    external: true
